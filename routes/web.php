@@ -13,3 +13,7 @@ Route::get('dashboard', function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
+
+Route::get('/hello', function () {
+    return Inertia::render('Hello'); // فایل Hello.vue داخل resources/js/pages
+})->name('hello');

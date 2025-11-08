@@ -17,10 +17,18 @@ import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
+
+
+
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Hello',
+        href: '/hello',      // لازم نیست وای‌فایندر راه بندازی؛ لینک ساده اوکیه
         icon: LayoutGrid,
     },
 ];
