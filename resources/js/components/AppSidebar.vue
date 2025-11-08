@@ -23,6 +23,8 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+
+
 ];
 
 const footerNavItems: NavItem[] = [
