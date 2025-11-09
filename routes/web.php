@@ -1,7 +1,7 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\SubordinateUsersController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -21,9 +21,32 @@ Route::get('/reports', function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
-require __DIR__.'/admin/web.php';
-require __DIR__.'/agent/web.php';
-require __DIR__.'/adminAgent/web.php';
+
+
+// مسیرهای مخصوص ادمین
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/panel', function () {
+        return Inertia::render('Admin/Panel');
+    })->name('panel');
+});
+
+
+// مسیرهای مخصوص نماینده
+Route::middleware(['auth', 'role:agent'])->prefix('agent')->name('agent.')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Agent/Dashboard');
+    })->name('dashboard');
+});
+
+// مسیرهایی که هم ادمین و هم نماینده به آن دسترسی دارند
+Route::middleware(['auth', 'role:admin,agent'])->group(function () {
+    Route::get('/my-users', [SubordinateUsersController::class, 'index'])->name('users.index');
+
+
+
+
+});
+
 
 
 
