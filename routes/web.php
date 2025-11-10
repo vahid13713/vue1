@@ -42,9 +42,6 @@ Route::middleware(['auth', 'role:agent'])->prefix('agent')->name('agent.')->grou
 Route::middleware(['auth', 'role:admin,agent'])->group(function () {
     Route::get('/my-users', [SubordinateUsersController::class, 'index'])->name('users.index');
 
-
-
-
 });
 
 

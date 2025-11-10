@@ -5,7 +5,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce';
 
-// 1. پراپ filters را برای دریافت مقادیر فعلی جستجو و فیلتر اضافه کنید
+// 1. Define props to receive the current search and filter values
 const props = defineProps({
     users: {
         type: Object,
@@ -19,94 +19,94 @@ const props = defineProps({
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'داشبورد',
+        title: 'Dashboard',
         href: '/dashboard',
     },
     {
-        title: 'کاربران من',
+        title: 'My Users',
         href: '/my-users',
     },
 ];
 
-// 2. متغیرهای reactive برای نگهداری مقادیر اینپوت‌ها
-// مقدار اولیه از پراپ‌ها گرفته می‌شود تا حالت فیلتر حفظ شود
+// 2. Reactive variables to hold the input values
+// Initial values are taken from props to preserve the filter state
 const search = ref(props.filters.search);
 const role = ref(props.filters.role);
 
-// 3. این تابع تغییرات را رصد کرده و بعد از 300 میلی‌ثانیه توقف کاربر، درخواست جدید را ارسال می‌کند
+// 3. This watcher observes changes and sends a new request after 300ms of user inactivity
 watch([search, role], debounce(function ([newSearch, newRole]) {
     router.get('/my-users', {
         search: newSearch,
         role: newRole,
     }, {
-        preserveState: true, // حالت فعلی صفحه (مانند اسکرول) را حفظ می‌کند
-        replace: true, // تاریخچه مرورگر را با درخواست‌های مکرر پر نمی‌کند
+        preserveState: true, // Preserves the current state of the page (like scroll position)
+        replace: true, // Doesn't clutter the browser history with frequent requests
     });
 }, 300));
 
 </script>
 
 <template>
-    <Head title="کاربران من" />
+    <Head title="My Users" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div class="rounded-xl border border-sidebar-border/70 bg-white p-4 dark:border-sidebar-border dark:bg-gray-800">
+            <!-- ===== THIS IS THE MODIFIED LINE ===== -->
+            <div class="rounded-xl border border-sidebar-border/70 bg-white p-4 shadow-md transition-all duration-300 ease-in-out hover:shadow-lg dark:border-sidebar-border dark:bg-gray-800">
 
                 <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                    لیست کاربران زیرمجموعه
+                   Users List
                 </h3>
 
-                <!-- 4. فرم جستجو و فیلتر -->
+                <!-- 4. Search and filter form -->
                 <div class="mb-4 flex flex-col items-center gap-4 sm:flex-row">
                     <div class="relative w-full sm:w-auto sm:flex-grow">
                         <input
                             v-model="search"
                             type="text"
-                            placeholder="جستجو در نام و ایمیل..."
+                            placeholder="Search by name and email..."
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                         />
                     </div>
                     <select v-model="role" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 sm:w-48 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                        <option :value="null">همه نقش‌ها</option>
-                        <option value="admin">ادمین</option>
-                        <option value="agent">نماینده</option>
-                        <option value="user">کاربر</option>
+                        <option :value="null">All Roles</option>
+                        <option value="agent">Agent</option>
+                        <option value="user">User</option>
                     </select>
                 </div>
 
 
-                <!-- جدول نمایش کاربران -->
+                <!-- Users Table -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">نام</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">ایمیل</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">نقش</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">تاریخ عضویت</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Email</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Role</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300">Date Joined</th>
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
                         <tr v-if="props.users.data.length === 0">
                             <td class="px-6 py-4 text-center text-sm text-gray-500" colspan="4">
-                                هیچ کاربری با این مشخصات یافت نشد.
+                                No users found with these criteria.
                             </td>
                         </tr>
                         <tr v-for="user in props.users.data" :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-600">
                             <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{{ user.email }}</td>
                             <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{{ user.role }}</td>
-                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{{ new Date(user.created_at).toLocaleDateString('fa-IR') }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-300">{{ new Date(user.created_at).toLocaleDateString('en-CA') }}</td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- بخش صفحه‌بندی (بدون تغییر) -->
+                <!-- Pagination Section -->
                 <div v-if="props.users.links.length > 3" class="mt-4 flex flex-col items-center justify-between space-y-2 sm:flex-row sm:space-y-0">
                     <div class="text-sm text-gray-700 dark:text-gray-400">
-                        نمایش از {{ props.users.from }} تا {{ props.users.to }} از مجموع {{ props.users.total }} نتیجه
+                        Showing {{ props.users.from }} to {{ props.users.to }} of {{ props.users.total }} results
                     </div>
                     <div class="flex flex-wrap justify-center">
                         <template v-for="(link, key) in props.users.links" :key="key">
