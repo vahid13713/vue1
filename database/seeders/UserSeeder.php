@@ -45,40 +45,44 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        // Part 3: Create 200 new users with parent_id = 5 and specific creation dates.
+        // Part 3: Create users for each parent_id from 2 to 5.
+        // --- THIS IS THE MODIFIED PART ---
 
-        // --- THIS IS THE MODIFIED LINE ---
         // Set a fixed base date to 2025-11-10.
         $baseDate = Carbon::create(2025, 11, 10);
 
-        for ($i = 1; $i <= 200; $i++) {
-            $creationDate = null;
+        // Outer loop to iterate through parent_ids from 2 to 9.
+        for ($parentId = 2; $parentId <= 5; $parentId++) {
+            // Inner loop to create 125 users for the current parent_id.
+            for ($i = 1; $i <= 125; $i++) {
+                $creationDate = null;
 
-            if ($i <= 25) {
-                // First 25 users: created exactly 15 days ago from the base date
-                $creationDate = $baseDate->copy()->subDays(15);
-            } elseif ($i <= 50) {
-                // Next 25 users: created exactly 10 days ago from the base date
-                $creationDate = $baseDate->copy()->subDays(10);
-            } elseif ($i <= 75) {
-                // Next 25 users: created exactly 5 days ago from the base date
-                $creationDate = $baseDate->copy()->subDays(5);
-            } else {
-                // The remaining 125 users: created on the base date
-                $creationDate = $baseDate->copy();
+                if ($i <= 25) {
+                    // First 25 users: created exactly 15 days ago from the base date
+                    $creationDate = $baseDate->copy()->subDays(15);
+                } elseif ($i <= 50) {
+                    // Next 25 users: created exactly 10 days ago from the base date
+                    $creationDate = $baseDate->copy()->subDays(10);
+                } elseif ($i <= 75) {
+                    // Next 25 users: created exactly 5 days ago from the base date
+                    $creationDate = $baseDate->copy()->subDays(5);
+                } else {
+                    // The remaining users: created on the base date
+                    $creationDate = $baseDate->copy();
+                }
+
+                DB::table('users')->insert([
+                    'name' => 'user_parent' . $parentId . '_num' . $i,
+                    'email' => 'user_parent' . $parentId . '_num' . $i . '@g.com',
+                    'password' => Hash::make('11111111'),
+                    'role' => 'user',
+                    'parent_id' => $parentId, // Use the parentId from the outer loop
+                    'email_verified_at' => $creationDate,
+                    'remember_token' => Str::random(10),
+                    'created_at' => $creationDate,
+                    'updated_at' => $creationDate,
+                ]);
             }
-
-            DB::table('users')->insert([
-                'name' => 'seriesAuser' . $i,
-                'email' => 'seriesAuser' . $i . '@g.com',
-                'password' => Hash::make('11111111'),
-                'role' => 'user',
-                'parent_id' => 5,
-                'email_verified_at' => $creationDate,
-                'remember_token' => Str::random(10),
-                'created_at' => $creationDate,
-                'updated_at' => $creationDate,
-            ]);
         }
     }
 }
