@@ -13,26 +13,41 @@ class SubordinateUsersController extends Controller
      */
     public function index(Request $request): Response
     {
-        // 1. Get the authenticated user
+        // 1. Validate the incoming request data for security and integrity
+        $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'role' => ['nullable', 'string', 'in:agent,user'],
+            'created_from' => ['nullable', 'date_format:Y-m-d'],
+            'created_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:created_from'],
+        ]);
+
+        // 2. Get the authenticated user
         $user = $request->user();
 
-        // 2. Start the query from the subordinate users
+        // 3. Build the query, starting from the authorized users (children)
         $subordinates = $user->children()
-            // 3. Apply search filter (only if the 'search' parameter exists)
+            // Apply search filter if 'search' parameter exists
             ->when($request->input('search'), function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            // 4. Apply role filter (only if the 'role' parameter exists)
+            // Apply role filter if 'role' parameter exists
             ->when($request->input('role'), function ($query, $role) {
                 $query->where('role', $role);
             })
-            // 5. Paginate the results
+            // Apply date range filter
+            ->when($request->input('created_from'), function ($query, $date) {
+                $query->whereDate('created_at', '>=', $date);
+            })
+            ->when($request->input('created_to'), function ($query, $date) {
+                $query->whereDate('created_at', '<=', $date);
+            })
+            // 4. Paginate the results and preserve filter parameters in links
             ->paginate(10)
-            // 6. Preserve filter parameters in pagination links
             ->withQueryString()
+            // 5. Transform the data to prevent exposing sensitive fields
             ->through(fn ($subordinate) => [
                 'id' => $subordinate->id,
                 'name' => $subordinate->name,
@@ -41,10 +56,10 @@ class SubordinateUsersController extends Controller
                 'created_at' => $subordinate->created_at,
             ]);
 
-        // 7. Send data and active filters to the view component
+        // 6. Render the Inertia component with props
         return Inertia::render('Users/Index', [
             'users' => $subordinates,
-            'filters' => $request->only(['search', 'role']),
+            'filters' => $request->only(['search', 'role', 'created_from', 'created_to']),
         ]);
     }
 }

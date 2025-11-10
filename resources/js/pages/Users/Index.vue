@@ -5,7 +5,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce';
 
-// 1. Define props to receive the current search and filter values
+// 1. Define props to receive data and filter state from the controller
 const props = defineProps({
     users: {
         type: Object,
@@ -28,21 +28,28 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-// 2. Reactive variables to hold the input values
-// Initial values are taken from props to preserve the filter state
+// 2. Create reactive variables for each filter, initialized from props
 const search = ref(props.filters.search);
 const role = ref(props.filters.role);
+const createdFrom = ref(props.filters.created_from);
+const createdTo = ref(props.filters.created_to);
 
-// 3. This watcher observes changes and sends a new request after 300ms of user inactivity
-watch([search, role], debounce(function ([newSearch, newRole]) {
-    router.get('/my-users', {
-        search: newSearch,
-        role: newRole,
-    }, {
-        preserveState: true, // Preserves the current state of the page (like scroll position)
-        replace: true, // Doesn't clutter the browser history with frequent requests
-    });
-}, 300));
+// 3. Watch for changes in any filter and send a new request to the server
+// Debounce is used to avoid sending too many requests while the user is typing
+watch(
+    [search, role, createdFrom, createdTo],
+    debounce(function ([newSearch, newRole, newCreatedFrom, newCreatedTo]) {
+        router.get('/my-users', {
+            search: newSearch,
+            role: newRole,
+            created_from: newCreatedFrom,
+            created_to: newCreatedTo,
+        }, {
+            preserveState: true, // Keep the user's scroll position and component state
+            replace: true,       // Avoid polluting browser history with filter changes
+        });
+    }, 300) // Wait 300ms after the user stops typing
+);
 
 </script>
 
@@ -51,15 +58,15 @@ watch([search, role], debounce(function ([newSearch, newRole]) {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <!-- ===== THIS IS THE MODIFIED LINE ===== -->
             <div class="rounded-xl border border-sidebar-border/70 bg-white p-4 shadow-md transition-all duration-300 ease-in-out hover:shadow-lg dark:border-sidebar-border dark:bg-gray-800">
 
                 <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                   Users List
+                    Users List
                 </h3>
 
-                <!-- 4. Search and filter form -->
-                <div class="mb-4 flex flex-col items-center gap-4 sm:flex-row">
+                <!-- 4. Filter form section -->
+                <div class="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap">
+                    <!-- Search Input -->
                     <div class="relative w-full sm:w-auto sm:flex-grow">
                         <input
                             v-model="search"
@@ -68,13 +75,30 @@ watch([search, role], debounce(function ([newSearch, newRole]) {
                             class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
                         />
                     </div>
+                    <!-- Role Select -->
                     <select v-model="role" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 sm:w-48 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
                         <option :value="null">All Roles</option>
                         <option value="agent">Agent</option>
                         <option value="user">User</option>
                     </select>
-                </div>
 
+                    <!-- Date From Input -->
+                    <div class="relative w-full sm:w-48">
+                        <input
+                            v-model="createdFrom"
+                            type="date"
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                        />
+                    </div>
+                    <!-- Date To Input -->
+                    <div class="relative w-full sm:w-48">
+                        <input
+                            v-model="createdTo"
+                            type="date"
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                        />
+                    </div>
+                </div>
 
                 <!-- Users Table -->
                 <div class="overflow-x-auto">
