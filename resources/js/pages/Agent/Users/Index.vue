@@ -63,6 +63,12 @@ watch(
                 <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                     Users List
                 </h3>
+                <Link
+                    :href="'/users/create'"
+                    class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-700 dark:hover:bg-blue-800"
+                >
+                    Add New User
+                </Link>
 
                 <!-- 4. Filter form section -->
                 <div class="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap">

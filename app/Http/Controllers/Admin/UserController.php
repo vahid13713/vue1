@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\StoreUserRequest; // 1. Import the new validation request class
 use Illuminate\Http\Request; // Keep this for other methods
 use Inertia\Inertia; // Import Inertia to render views
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
@@ -17,6 +18,7 @@ class UserController extends Controller
     public function index()
     {
         // Authorize if the user can view a list of any users.
+
         $this->authorize('viewAny', User::class);
 
         // TODO: We will implement this later. For now, it redirects to the main user page.
