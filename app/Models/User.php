@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class User extends Authenticatable
 {
@@ -22,7 +25,38 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'parent_id',
     ];
+
+    /*is admin*/
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+    public function isAgent(): bool
+    {
+        return $this->role === 'agent';
+    }
+    /**
+     * Get the parent that owns the user.
+     * (رابطه برای پیدا کردن والد یک کاربر)
+     */
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
+    /**
+     * Get the children for the user.
+     * (رابطه برای پیدا کردن کاربران زیرمجموعه)
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+
 
     /**
      * The attributes that should be hidden for serialization.

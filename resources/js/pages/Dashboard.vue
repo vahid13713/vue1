@@ -4,13 +4,16 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '../components/PlaceholderPattern.vue';
-
+import { usePage } from '@inertiajs/vue3';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
     },
 ];
+
+const user = usePage().props.auth.user;
+
 </script>
 
 <template>
@@ -24,6 +27,24 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div
                     class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
                 >
+                    <div>
+                        <pre>{{ user }}</pre>
+                        <!-- این بخش فقط برای ادمین نمایش داده می‌شود -->
+                        <nav v-if="user.role === 'admin'">
+                            پنل مدیریت
+                        </nav>
+
+                        <!-- این بخش فقط برای نماینده نمایش داده می‌شود -->
+                        <div v-if="user.role === 'agent'">
+                            <p>خوش آمدید، نماینده گرامی!</p>
+                        </div>
+                        <div v-if="user.role === 'user'">
+                            <p>خوش آمدید، یوزر الاف گرامی!</p>
+                        </div>
+                    </div>
+
+
+
                     <PlaceholderPattern />
                 </div>
                 <div
