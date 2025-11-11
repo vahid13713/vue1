@@ -15,9 +15,11 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+    use AuthorizesRequests;
     public function index()
     {
         // Authorize if the user can view a list of any users.
+
 
         $this->authorize('viewAny', User::class);
 
@@ -34,7 +36,7 @@ class UserController extends Controller
         $this->authorize('create', User::class);
 
         // This line renders the Vue component for the create user form.
-        return Inertia::render('Admin/Users/Create');
+        return Inertia::render('Agent/Users/Create');
     }
 
     /**
