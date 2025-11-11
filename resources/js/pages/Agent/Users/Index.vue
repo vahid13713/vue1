@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'My Users',
-        href: '/my-users',
+        href: '/users',
     },
 ];
 
@@ -39,7 +39,7 @@ const createdTo = ref(props.filters.created_to);
 watch(
     [search, role, createdFrom, createdTo],
     debounce(function ([newSearch, newRole, newCreatedFrom, newCreatedTo]) {
-        router.get('/my-users', {
+        router.get('/users', {
             search: newSearch,
             role: newRole,
             created_from: newCreatedFrom,
