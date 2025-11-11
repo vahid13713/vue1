@@ -57,7 +57,7 @@ class SubordinateUsersController extends Controller
             ]);
 
         // 6. Render the Inertia component with props
-        return Inertia::render('Users/Index', [
+        return Inertia::render('Agent/Users/Index', [
             'users' => $subordinates,
             'filters' => $request->only(['search', 'role', 'created_from', 'created_to']),
         ]);
