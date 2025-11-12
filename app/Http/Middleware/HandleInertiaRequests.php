@@ -50,6 +50,10 @@ class HandleInertiaRequests extends Middleware
                     'role' => $request->user()->role, // این خط نقش کاربر را اضافه می‌کند
                 ] : null,
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
