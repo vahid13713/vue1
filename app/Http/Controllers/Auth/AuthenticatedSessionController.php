@@ -30,8 +30,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // اعتبار سنجی و دریافت کاربر
         $user = $request->validateCredentials();
 
+        // --- حفظ منطق احراز هویت دو مرحله‌ای (مهم) ---
         if (Features::enabled(Features::twoFactorAuthentication()) && $user->hasEnabledTwoFactorAuthentication()) {
             $request->session()->put([
                 'login.id' => $user->getKey(),
@@ -40,12 +42,27 @@ class AuthenticatedSessionController extends Controller
 
             return to_route('two-factor.login');
         }
+        // --- پایان منطق 2FA ---
 
+        // ورود کاربر به سیستم
         Auth::login($user, $request->boolean('remember'));
 
+        // ایجاد مجدد session برای امنیت
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // --- شروع منطق جدید برای هدایت کاربر بر اساس ستون 'role' ---
+        // این کد مستقیماً ستون 'role' از مدل User را می‌خواند
+        $redirectRoute = match ($user->role) {
+            'admin' => route('admin.dashboard'),
+            'agent' => route('agent.dashboard'),
+            'user'  => route('user.dashboard'),
+            // یک مسیر پیش‌فرض در صورتی که نقش کاربر تعریف نشده باشد
+            default => route('dashboard'), // می‌توانید این را به user.dashboard تغییر دهید
+        };
+
+        // هدایت کاربر به صفحه مورد نظر یا داشبورد مربوطه
+        return redirect()->intended($redirectRoute);
+        // --- پایان منطق جدید ---
     }
 
     /**

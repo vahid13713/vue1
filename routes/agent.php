@@ -5,16 +5,18 @@ use App\Http\Controllers\Agent\UserController as AgentUserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// --- Routes for Agent role ONLY ---
-Route::middleware(['auth', 'role:agent,admin'])
-    ->group(function () {
+// --- Routes for Agent ---
+// تمام میدلورها، پیشوندها و نام‌ها از فایل bootstrap/app.php اعمال می‌شوند
 
-        // داشبورد نماینده
-        Route::get('agent/dashboard', fn() => Inertia::render('Agent/Dashboard'))->name('agent.dashboard');
+// داشبورد نماینده
+// URL نهایی: /agent/dashboard
+// نام نهایی روت: agent.dashboard
+Route::get('/dashboard', fn() => Inertia::render('Agent/Dashboard'))->name('dashboard');
 
 
-        // مدیریت کاربران زیرمجموعه نماینده
-        Route::get('agent/users', [SubordinateUsersController::class, 'index'])->name('agent.users.index');
-        Route::get('agent/users/create', [AgentUserController::class, 'create'])->name('agent.users.create');
-        Route::post('agent/users', [AgentUserController::class, 'store'])->name('agent.users.store');
-    });
+// مدیریت کاربران زیرمجموعه نماینده
+// URL نهایی: /agent/users
+// نام نهایی روت: agent.users.index
+Route::get('/users', [SubordinateUsersController::class, 'index'])->name('users.index');
+Route::get('/users/create', [AgentUserController::class, 'create'])->name('users.create');
+Route::post('/users', [AgentUserController::class, 'store'])->name('users.store');

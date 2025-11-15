@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes/admin';
+import { dashboard } from '@/routes/user';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '../../components/PlaceholderPattern.vue';
@@ -41,8 +41,6 @@ const user = usePage().props.auth.user;
                         <div v-if="user.role === 'user'">
                             <p>خوش آمدید، یوزر الاف گرامی!</p>
                         </div>
-
-                        <p>خوش آمدید، ادمین گرامی!با داشبورد جدید</p>
                     </div>
 
 

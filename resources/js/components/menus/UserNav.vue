@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import NavMain from '@/components/NavMain.vue';
-import { dashboard } from '@/routes';
+import { dashboard } from '@/routes/user';
 import { type NavItem } from '@/types';
 import { LayoutGrid } from 'lucide-vue-next';
 

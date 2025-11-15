@@ -7,7 +7,7 @@ import PlaceholderPattern from '../components/PlaceholderPattern.vue';
 import { usePage } from '@inertiajs/vue3';
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
+        title: 'User Dashboard',
         href: dashboard().url,
     },
 ];
@@ -17,7 +17,7 @@ const user = usePage().props.auth.user;
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="User Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div
