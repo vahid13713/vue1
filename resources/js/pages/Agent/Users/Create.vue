@@ -25,7 +25,7 @@ const form = useForm({
 
 // Function to handle form submission
 function submit() {
-    form.post('/users', {
+    form.post('/agent/users', {
         onFinish: () => {
             // Optional: You can clear the password fields on finish
             form.reset('password', 'password_confirmation');

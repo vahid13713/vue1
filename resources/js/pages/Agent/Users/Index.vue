@@ -5,6 +5,13 @@ import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import debounce from 'lodash.debounce';
 
+// --- تغییر ۱: ایمپورت کردن آبجکت‌های روت ---
+// آبجکت مربوط به روت‌های کاربران را ایمپورت می‌کنیم.
+import agentUsers from '@/routes/agent/users';
+// فرض می‌کنیم روت داشبورد ایجنت نیز به همین شکل تعریف شده است.
+// این خط ممکن است نیاز به تنظیم داشته باشد بستگی به فایل روت داشبورد شما دارد.
+//import agentDashboard from '@/routes/agent/dashboard';
+import { dashboard } from '@/routes';
 // 1. Define props to receive data and filter state from the controller
 const props = defineProps({
     users: {
@@ -17,14 +24,17 @@ const props = defineProps({
     },
 });
 
+// --- تغییر ۲: استفاده از توابع روت در Breadcrumbs ---
+// به جای رشته متنی ثابت، از توابع برای تولید URL استفاده می‌کنیم.
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        //href: agentDashboard.index.url(), // <-- اصلاح شد
+        href: dashboard().url,
     },
     {
         title: 'My Users',
-        href: '/users',
+        href: agentUsers.index.url(), // <-- اصلاح شد
     },
 ];
 
@@ -39,8 +49,9 @@ const createdTo = ref(props.filters.created_to);
 watch(
     [search, role, createdFrom, createdTo],
     debounce(function ([newSearch, newRole, newCreatedFrom, newCreatedTo]) {
+        // --- تغییر ۳: استفاده از تابع روت در درخواست router.get ---
         router.get(
-            '/users',
+            agentUsers.index.url(), // <-- اصلاح شد
             {
                 search: newSearch,
                 role: newRole,
@@ -71,14 +82,16 @@ watch(
                 >
                     Users List
                 </h3>
+
+                <!-- --- تغییر ۴: استفاده از تابع روت در کامپوننت Link --- -->
                 <Link
-                    :href="'/users/create'"
+                    :href="agentUsers.create.url()"
                     class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
                     Add New User
                 </Link>
 
-                <!-- 4. Filter form section -->
+                <!-- 4. Filter form section (بدون تغییر) -->
                 <div
                     class="mb-4 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap"
                 >
@@ -119,7 +132,7 @@ watch(
                     </div>
                 </div>
 
-                <!-- Users Table -->
+                <!-- Users Table (بدون تغییر) -->
                 <div class="overflow-x-auto">
                     <table
                         class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
@@ -197,7 +210,7 @@ watch(
                     </table>
                 </div>
 
-                <!-- Pagination Section -->
+                <!-- Pagination Section (بدون تغییر) -->
                 <div
                     v-if="props.users.links.length > 3"
                     class="mt-4 flex flex-col items-center justify-between space-y-2 sm:flex-row sm:space-y-0"

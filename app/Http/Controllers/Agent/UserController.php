@@ -1,14 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\Admin\StoreUserRequest; // 1. Import the new validation request class
-use Illuminate\Http\Request; // Keep this for other methods
-use Inertia\Inertia; // Import Inertia to render views
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
+
+// 1. Import the new validation request class
+// Keep this for other methods
+// Import Inertia to render views
 
 class UserController extends Controller
 {
@@ -24,7 +28,8 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
 
         // TODO: We will implement this later. For now, it redirects to the main user page.
-        return redirect()->route('users.index');
+      return redirect()->route('agent.users.index');
+
     }
 
     /**
@@ -60,7 +65,7 @@ class UserController extends Controller
         ]);
 
         // 4. Redirect the user back to the main list with a success message.
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return redirect()->route('agent.users.index')->with('success', 'User created successfully.');
     }
 
     /**
